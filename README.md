@@ -11,7 +11,7 @@ The datawarehouse has 5 layers from bottom to top: ODS, DWD, DWS, DWT, ADS and a
 Data in the lower layer are the input to its upper layer. The input to the ODS layer comes from the log files and the tables in MySQL.
 
 ### ODS
-The business process data stored in the tables in MySQL are imported into HDFS using Sqoop (mysql_to_hdfs_init.sh for first day, mysql_to_hdfs.sh for following days).
+The business process data stored in the tables in MySQL are imported into HDFS using Sqoop (```mysql_to_hdfs_init.sh``` for first day, ```mysql_to_hdfs.sh``` for following days).
 The storage format is lzop (i.e., splittable LZO compression). And the LZO index file is created for each table.
 
 The log data are imported using Flume and Kafka. The pipeline is like: file -> Flume -> Kafka -> Flume -> HDFS.
