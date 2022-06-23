@@ -3,31 +3,31 @@
 APP=gmall
 sqoop=/mnt/gv0/brick/modules/sqoop/sqoop-1.4.6.bin__hadoop-2.0.4-alpha/bin/sqoop
 
-if [ -n "$2" ] ;then
-    do_date=$2
+if [ -n "$2" ]; then
+  do_date=$2
 else
-    do_date=`date -d '-1 day' +%F`
+  do_date=$(date -d '-1 day' +%F)
 fi
 
-import_data(){
-$sqoop import \
---connect jdbc:mysql://localhost:3306/$APP \
---username root \
---password root \
---target-dir /origin_data/$APP/db/$1/$do_date \
---delete-target-dir \
---query "$2 and  \$CONDITIONS" \
---num-mappers 1 \
---fields-terminated-by '\t' \
---compress \
---compression-codec lzop \
---null-string '\\N' \
---null-non-string '\\N'
+import_data() {
+  $sqoop import \
+    --connect jdbc:mysql://localhost:3306/$APP \
+    --username root \
+    --password root \
+    --target-dir /origin_data/$APP/db/$1/$do_date \
+    --delete-target-dir \
+    --query "$2 and  \$CONDITIONS" \
+    --num-mappers 1 \
+    --fields-terminated-by '\t' \
+    --compress \
+    --compression-codec lzop \
+    --null-string '\\N' \
+    --null-non-string '\\N'
 
-hadoop jar /mnt/gv0/brick/modules/hadoop/hadoop-3.1.3/share/hadoop/common/hadoop-lzo-0.4.20.jar com.hadoop.compression.lzo.DistributedLzoIndexer /origin_data/$APP/db/$1/$do_date
+  hadoop jar /mnt/gv0/brick/modules/hadoop/hadoop-3.1.3/share/hadoop/common/hadoop-lzo-0.4.20.jar com.hadoop.compression.lzo.DistributedLzoIndexer /origin_data/$APP/db/$1/$do_date
 }
 
-import_order_info(){
+import_order_info() {
   import_data order_info "select
                             id, 
                             total_amount, 
@@ -51,7 +51,7 @@ import_order_info(){
                         or date_format(operate_time,'%Y-%m-%d')='$do_date')"
 }
 
-import_coupon_use(){
+import_coupon_use() {
   import_data coupon_use "select
                           id,
                           coupon_id,
@@ -69,7 +69,7 @@ import_coupon_use(){
                         or date_format(expire_time,'%Y-%m-%d')='$do_date')"
 }
 
-import_order_status_log(){
+import_order_status_log() {
   import_data order_status_log "select
                                   id,
                                   order_id,
@@ -79,7 +79,7 @@ import_order_status_log(){
                                 where date_format(operate_time,'%Y-%m-%d')='$do_date'"
 }
 
-import_user_info(){
+import_user_info() {
   import_data "user_info" "select 
                             id,
                             login_name,
@@ -97,7 +97,7 @@ import_user_info(){
                           or DATE_FORMAT(operate_time,'%Y-%m-%d')='$do_date')"
 }
 
-import_order_detail(){
+import_order_detail() {
   import_data order_detail "select 
                               id,
                               order_id, 
@@ -115,8 +115,8 @@ import_order_detail(){
                             where DATE_FORMAT(create_time,'%Y-%m-%d')='$do_date'"
 }
 
-import_payment_info(){
-  import_data "payment_info"  "select 
+import_payment_info() {
+  import_data "payment_info" "select 
                                 id,  
                                 out_trade_no, 
                                 order_id, 
@@ -133,7 +133,7 @@ import_payment_info(){
                               or DATE_FORMAT(callback_time,'%Y-%m-%d')='$do_date')"
 }
 
-import_comment_info(){
+import_comment_info() {
   import_data comment_info "select
                               id,
                               user_id,
@@ -146,7 +146,7 @@ import_comment_info(){
                             where date_format(create_time,'%Y-%m-%d')='$do_date'"
 }
 
-import_order_refund_info(){
+import_order_refund_info() {
   import_data order_refund_info "select
                                 id,
                                 user_id,
@@ -162,7 +162,7 @@ import_order_refund_info(){
                               where date_format(create_time,'%Y-%m-%d')='$do_date'"
 }
 
-import_sku_info(){
+import_sku_info() {
   import_data sku_info "select 
                           id,
                           spu_id,
@@ -177,14 +177,14 @@ import_sku_info(){
                         from sku_info where 1=1"
 }
 
-import_base_category1(){
+import_base_category1() {
   import_data "base_category1" "select 
                                   id,
                                   name 
                                 from base_category1 where 1=1"
 }
 
-import_base_category2(){
+import_base_category2() {
   import_data "base_category2" "select
                                   id,
                                   name,
@@ -192,7 +192,7 @@ import_base_category2(){
                                 from base_category2 where 1=1"
 }
 
-import_base_category3(){
+import_base_category3() {
   import_data "base_category3" "select
                                   id,
                                   name,
@@ -200,7 +200,7 @@ import_base_category3(){
                                 from base_category3 where 1=1"
 }
 
-import_base_province(){
+import_base_province() {
   import_data base_province "select
                               id,
                               name,
@@ -212,7 +212,7 @@ import_base_province(){
                             where 1=1"
 }
 
-import_base_region(){
+import_base_region() {
   import_data base_region "select
                               id,
                               region_name
@@ -220,7 +220,7 @@ import_base_region(){
                             where 1=1"
 }
 
-import_base_trademark(){
+import_base_trademark() {
   import_data base_trademark "select
                                 id,
                                 tm_name
@@ -228,7 +228,7 @@ import_base_trademark(){
                               where 1=1"
 }
 
-import_spu_info(){
+import_spu_info() {
   import_data spu_info "select
                             id,
                             spu_name,
@@ -238,7 +238,7 @@ import_spu_info(){
                           where 1=1"
 }
 
-import_favor_info(){
+import_favor_info() {
   import_data favor_info "select
                           id,
                           user_id,
@@ -251,7 +251,7 @@ import_favor_info(){
                         where 1=1"
 }
 
-import_cart_info(){
+import_cart_info() {
   import_data cart_info "select
                         id,
                         user_id,
@@ -269,7 +269,7 @@ import_cart_info(){
                       where 1=1"
 }
 
-import_coupon_info(){
+import_coupon_info() {
   import_data coupon_info "select
                           id,
                           coupon_name,
@@ -291,7 +291,7 @@ import_coupon_info(){
                         where 1=1"
 }
 
-import_activity_info(){
+import_activity_info() {
   import_data activity_info "select
                               id,
                               activity_name,
@@ -303,8 +303,8 @@ import_activity_info(){
                             where 1=1"
 }
 
-import_activity_rule(){
-    import_data activity_rule "select
+import_activity_rule() {
+  import_data activity_rule "select
                                     id,
                                     activity_id,
                                     activity_type,
@@ -317,8 +317,8 @@ import_activity_rule(){
                                 where 1=1"
 }
 
-import_base_dic(){
-    import_data base_dic "select
+import_base_dic() {
+  import_data base_dic "select
                             dic_code,
                             dic_name,
                             parent_code,
@@ -328,9 +328,8 @@ import_base_dic(){
                           where 1=1"
 }
 
-
-import_order_detail_activity(){
-    import_data order_detail_activity "select
+import_order_detail_activity() {
+  import_data order_detail_activity "select
                                                                 id,
                                                                 order_id,
                                                                 order_detail_id,
@@ -342,9 +341,8 @@ import_order_detail_activity(){
                                                             where date_format(create_time,'%Y-%m-%d')='$do_date'"
 }
 
-
-import_order_detail_coupon(){
-    import_data order_detail_coupon "select
+import_order_detail_coupon() {
+  import_data order_detail_coupon "select
                                                                 id,
 								                                                order_id,
                                                                 order_detail_id,
@@ -356,9 +354,8 @@ import_order_detail_coupon(){
                                                             where date_format(create_time,'%Y-%m-%d')='$do_date'"
 }
 
-
-import_refund_payment(){
-    import_data refund_payment "select
+import_refund_payment() {
+  import_data refund_payment "select
                                                         id,
                                                         out_trade_no,
                                                         order_id,
@@ -372,12 +369,12 @@ import_refund_payment(){
                                                         callback_time
                                                     from refund_payment
                                                     where (DATE_FORMAT(create_time,'%Y-%m-%d')='$do_date' 
-                                                    or DATE_FORMAT(callback_time,'%Y-%m-%d')='$do_date')"                                                    
+                                                    or DATE_FORMAT(callback_time,'%Y-%m-%d')='$do_date')"
 
 }
 
-import_sku_attr_value(){
-    import_data sku_attr_value "select
+import_sku_attr_value() {
+  import_data sku_attr_value "select
                                                     id,
                                                     attr_id,
                                                     value_id,
@@ -388,9 +385,8 @@ import_sku_attr_value(){
                                                 where 1=1"
 }
 
-
-import_sku_sale_attr_value(){
-    import_data sku_sale_attr_value "select
+import_sku_sale_attr_value() {
+  import_data sku_sale_attr_value "select
                                                             id,
                                                             sku_id,
                                                             spu_id,
@@ -403,106 +399,106 @@ import_sku_sale_attr_value(){
 }
 
 case $1 in
-  "order_info")
-     import_order_info
-;;
-  "base_category1")
-     import_base_category1
-;;
-  "base_category2")
-     import_base_category2
-;;
-  "base_category3")
-     import_base_category3
-;;
-  "order_detail")
-     import_order_detail
-;;
-  "sku_info")
-     import_sku_info
-;;
-  "user_info")
-     import_user_info
-;;
-  "payment_info")
-     import_payment_info
-;;
-  "base_province")
-     import_base_province
-;;
-  "activity_info")
-      import_activity_info
-;;
-  "cart_info")
-      import_cart_info
-;;
-  "comment_info")
-      import_comment_info
-;;
-  "coupon_info")
-      import_coupon_info
-;;
-  "coupon_use")
-      import_coupon_use
-;;
-  "favor_info")
-      import_favor_info
-;;
-  "order_refund_info")
-      import_order_refund_info
-;;
-  "order_status_log")
-      import_order_status_log
-;;
-  "spu_info")
-      import_spu_info
-;;
-  "activity_rule")
-      import_activity_rule
-;;
-  "base_dic")
-      import_base_dic
-;;
-  "order_detail_activity")
-      import_order_detail_activity
-;;
-  "order_detail_coupon")
-      import_order_detail_coupon
-;;
-  "refund_payment")
-      import_refund_payment
-;;
-  "sku_attr_value")
-      import_sku_attr_value
-;;
-  "sku_sale_attr_value")
-      import_sku_sale_attr_value
-;;
+"order_info")
+  import_order_info
+  ;;
+"base_category1")
+  import_base_category1
+  ;;
+"base_category2")
+  import_base_category2
+  ;;
+"base_category3")
+  import_base_category3
+  ;;
+"order_detail")
+  import_order_detail
+  ;;
+"sku_info")
+  import_sku_info
+  ;;
+"user_info")
+  import_user_info
+  ;;
+"payment_info")
+  import_payment_info
+  ;;
+"base_province")
+  import_base_province
+  ;;
+"activity_info")
+  import_activity_info
+  ;;
+"cart_info")
+  import_cart_info
+  ;;
+"comment_info")
+  import_comment_info
+  ;;
+"coupon_info")
+  import_coupon_info
+  ;;
+"coupon_use")
+  import_coupon_use
+  ;;
+"favor_info")
+  import_favor_info
+  ;;
+"order_refund_info")
+  import_order_refund_info
+  ;;
+"order_status_log")
+  import_order_status_log
+  ;;
+"spu_info")
+  import_spu_info
+  ;;
+"activity_rule")
+  import_activity_rule
+  ;;
+"base_dic")
+  import_base_dic
+  ;;
+"order_detail_activity")
+  import_order_detail_activity
+  ;;
+"order_detail_coupon")
+  import_order_detail_coupon
+  ;;
+"refund_payment")
+  import_refund_payment
+  ;;
+"sku_attr_value")
+  import_sku_attr_value
+  ;;
+"sku_sale_attr_value")
+  import_sku_sale_attr_value
+  ;;
 "all")
-   import_base_category1
-   import_base_category2
-   import_base_category3
-   import_order_info
-   import_order_detail
-   import_sku_info
-   import_user_info
-   import_payment_info
-   import_base_trademark
-   import_activity_info
-   import_cart_info
-   import_comment_info
-   import_coupon_use
-   import_coupon_info
-   import_favor_info
-   import_order_refund_info
-   import_order_status_log
-   import_spu_info
-   import_activity_rule
-   import_base_dic
-   import_order_detail_activity
-   import_order_detail_coupon
-   import_refund_payment
-   import_sku_attr_value
-   import_sku_sale_attr_value
-;;
+  import_base_category1
+  import_base_category2
+  import_base_category3
+  import_order_info
+  import_order_detail
+  import_sku_info
+  import_user_info
+  import_payment_info
+  import_base_trademark
+  import_activity_info
+  import_cart_info
+  import_comment_info
+  import_coupon_use
+  import_coupon_info
+  import_favor_info
+  import_order_refund_info
+  import_order_status_log
+  import_spu_info
+  import_activity_rule
+  import_base_dic
+  import_order_detail_activity
+  import_order_detail_coupon
+  import_refund_payment
+  import_sku_attr_value
+  import_sku_sale_attr_value
+  ;;
 esac

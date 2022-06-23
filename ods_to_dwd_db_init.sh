@@ -1,12 +1,12 @@
 #!/bin/bash
 APP=gmall
 
-if [ -n "$2" ] ;then
-   do_date=$2
-else 
-   echo "请传入日期参数"
-   exit
-fi 
+if [ -n "$2" ]; then
+  do_date=$2
+else
+  echo "请传入日期参数"
+  exit
+fi
 
 dwd_order_info="
 set hive.exec.dynamic.partition.mode=nonstrict;
@@ -284,34 +284,34 @@ left join
 on rp.order_id=oi.id;"
 
 case $1 in
-    dwd_order_info )
-        hive -e "$dwd_order_info"
-    ;;
-    dwd_order_detail )
-        hive -e "$dwd_order_detail"
-    ;;
-    dwd_payment_info )
-        hive -e "$dwd_payment_info"
-    ;;
-    dwd_cart_info )
-        hive -e "$dwd_cart_info"
-    ;;
-    dwd_comment_info )
-        hive -e "$dwd_comment_info"
-    ;;
-    dwd_favor_info )
-        hive -e "$dwd_favor_info"
-    ;;
-    dwd_coupon_use )
-        hive -e "$dwd_coupon_use"
-    ;;
-    dwd_order_refund_info )
-        hive -e "$dwd_order_refund_info"
-    ;;
-    dwd_refund_payment )
-        hive -e "$dwd_refund_payment"
-    ;;
-    all )
-        hive -e "$dwd_order_info$dwd_order_detail$dwd_payment_info$dwd_cart_info$dwd_comment_info$dwd_favor_info$dwd_coupon_use$dwd_order_refund_info$dwd_refund_payment"
-    ;;
+dwd_order_info)
+  hive -e "$dwd_order_info"
+  ;;
+dwd_order_detail)
+  hive -e "$dwd_order_detail"
+  ;;
+dwd_payment_info)
+  hive -e "$dwd_payment_info"
+  ;;
+dwd_cart_info)
+  hive -e "$dwd_cart_info"
+  ;;
+dwd_comment_info)
+  hive -e "$dwd_comment_info"
+  ;;
+dwd_favor_info)
+  hive -e "$dwd_favor_info"
+  ;;
+dwd_coupon_use)
+  hive -e "$dwd_coupon_use"
+  ;;
+dwd_order_refund_info)
+  hive -e "$dwd_order_refund_info"
+  ;;
+dwd_refund_payment)
+  hive -e "$dwd_refund_payment"
+  ;;
+all)
+  hive -e "$dwd_order_info$dwd_order_detail$dwd_payment_info$dwd_cart_info$dwd_comment_info$dwd_favor_info$dwd_coupon_use$dwd_order_refund_info$dwd_refund_payment"
+  ;;
 esac

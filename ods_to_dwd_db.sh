@@ -2,25 +2,24 @@
 
 APP=gmall
 # 如果是输入的日期按照取输入日期；如果没输入日期取当前时间的前一天
-if [ -n "$2" ] ;then
-    do_date=$2
-else 
-    do_date=`date -d "-1 day" +%F`
+if [ -n "$2" ]; then
+  do_date=$2
+else
+  do_date=$(date -d "-1 day" +%F)
 fi
 
-
 # 假设某累积型快照事实表，某天所有的业务记录全部完成，则会导致9999-99-99分区的数据未被覆盖，从而导致数据重复，该函数根据9999-99-99分区的数据的末次修改时间判断其是否被覆盖了，如果未被覆盖，就手动清理
-clear_data(){
-    current_date=`date +%F`
-    current_date_timestamp=`date -d "$current_date" +%s`
+clear_data() {
+  current_date=$(date +%F)
+  current_date_timestamp=$(date -d "$current_date" +%s)
 
-    last_modified_date=`hadoop fs -ls /warehouse/gmall/dwd/$1 | grep '9999-99-99' | awk '{print $6}'`
-    last_modified_date_timestamp=`date -d "$last_modified_date" +%s`
+  last_modified_date=$(hadoop fs -ls /warehouse/gmall/dwd/$1 | grep '9999-99-99' | awk '{print $6}')
+  last_modified_date_timestamp=$(date -d "$last_modified_date" +%s)
 
-    if [[ $last_modified_date_timestamp -lt $current_date_timestamp ]]; then
-        echo "clear table $1 partition(dt=9999-99-99)"
-        hadoop fs -rm -r -f /warehouse/gmall/dwd/$1/dt=9999-99-99/*
-    fi
+  if [[ $last_modified_date_timestamp -lt $current_date_timestamp ]]; then
+    echo "clear table $1 partition(dt=9999-99-99)"
+    hadoop fs -rm -r -f /warehouse/gmall/dwd/$1/dt=9999-99-99/*
+  fi
 }
 
 dwd_order_info="
@@ -184,7 +183,6 @@ left join
 )odc
 on od.id=odc.order_detail_id;"
 
-
 dwd_payment_info="
 set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 set hive.exec.dynamic.partition.mode=nonstrict;
@@ -262,7 +260,6 @@ select
 from ${APP}.ods_cart_info
 where dt='$do_date';"
 
-
 dwd_comment_info="
 set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 insert overwrite table ${APP}.dwd_comment_info partition(dt='$do_date')
@@ -275,7 +272,6 @@ select
     appraise,
     create_time
 from ${APP}.ods_comment_info where dt='$do_date';"
-
 
 dwd_favor_info="
 set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
@@ -290,7 +286,6 @@ select
     cancel_time
 from ${APP}.ods_favor_info
 where dt='$do_date';"
-
 
 dwd_coupon_use="
 set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
@@ -362,7 +357,6 @@ left join
     select id,province_id from ${APP}.ods_order_info where dt='$do_date'
 )oi
 on ri.order_id=oi.id;"
-
 
 dwd_refund_payment="
 set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
@@ -445,42 +439,42 @@ full outer join
 on old.id=new.id;"
 
 case $1 in
-    dwd_order_info )
-        hive -e "$dwd_order_info"
-        clear_data dwd_order_info
-    ;;
-    dwd_order_detail )
-        hive -e "$dwd_order_detail"
-    ;;
-    dwd_payment_info )
-        hive -e "$dwd_payment_info"
-        clear_data dwd_payment_info
-    ;;
-    dwd_cart_info )
-        hive -e "$dwd_cart_info"
-    ;;
-    dwd_comment_info )
-        hive -e "$dwd_comment_info"
-    ;;
-    dwd_favor_info )
-        hive -e "$dwd_favor_info"
-    ;;
-    dwd_coupon_use )
-        hive -e "$dwd_coupon_use"
-        clear_data dwd_coupon_use
-    ;;
-    dwd_order_refund_info )
-        hive -e "$dwd_order_refund_info"
-    ;;
-    dwd_refund_payment )
-        hive -e "$dwd_refund_payment"
-        clear_data dwd_refund_payment
-    ;;
-    all )
-        hive -e "$dwd_order_info$dwd_order_detail$dwd_payment_info$dwd_cart_info$dwd_comment_info$dwd_favor_info$dwd_coupon_use$dwd_order_refund_info$dwd_refund_payment"
-        clear_data dwd_order_info
-        clear_data dwd_payment_info
-        clear_data dwd_coupon_use
-        clear_data dwd_refund_payment
-    ;;
+dwd_order_info)
+  hive -e "$dwd_order_info"
+  clear_data dwd_order_info
+  ;;
+dwd_order_detail)
+  hive -e "$dwd_order_detail"
+  ;;
+dwd_payment_info)
+  hive -e "$dwd_payment_info"
+  clear_data dwd_payment_info
+  ;;
+dwd_cart_info)
+  hive -e "$dwd_cart_info"
+  ;;
+dwd_comment_info)
+  hive -e "$dwd_comment_info"
+  ;;
+dwd_favor_info)
+  hive -e "$dwd_favor_info"
+  ;;
+dwd_coupon_use)
+  hive -e "$dwd_coupon_use"
+  clear_data dwd_coupon_use
+  ;;
+dwd_order_refund_info)
+  hive -e "$dwd_order_refund_info"
+  ;;
+dwd_refund_payment)
+  hive -e "$dwd_refund_payment"
+  clear_data dwd_refund_payment
+  ;;
+all)
+  hive -e "$dwd_order_info$dwd_order_detail$dwd_payment_info$dwd_cart_info$dwd_comment_info$dwd_favor_info$dwd_coupon_use$dwd_order_refund_info$dwd_refund_payment"
+  clear_data dwd_order_info
+  clear_data dwd_payment_info
+  clear_data dwd_coupon_use
+  clear_data dwd_refund_payment
+  ;;
 esac
